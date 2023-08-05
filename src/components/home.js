@@ -118,12 +118,10 @@ export default class Home extends Component {
       render(){ 
         return (
           <div className='main-container'>
-            <Navbar setProducts={this.updatePanel} />
-            <div className='container'>
-              <FilterPanel setProducts={this.updatePanel}/>
-              <Content products={this.state.products}/>
-            </div>
-          <div className='footer-content'>
+             <Navbar setProducts={this.updatePanel} />
+             <FilterPanel setProducts={this.updatePanel}/>
+             <Content products={this.state.products}/>
+             <div className='footer-content'>
               <div className="pagination">
                   <div onClick={()=>this.getPage(this.state.currentPage)} className='index'>{this.state.currentPage}</div>
                   <div><p className='index-text'>of</p></div>

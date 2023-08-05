@@ -80,11 +80,10 @@ import ListGroup from 'react-bootstrap/ListGroup';
     }
     render() {
         return(
-            <div>
-              <div className="topnav">
-                <div className='logo-container'>
+              <header className="header">
+                <a href='https://www.quasiris.de/de/quasiris-search-cloud/' className='logo-container'>
                     <img className='img-logo' alt='' src='https://www.quasiris.de/wp-content/uploads/2017/03/logo.png'></img>
-                </div>
+                </a>
                 <div className="search-bar-container">
                   <div className="search-container">
                     <input type='text' className="search-input" name="searchText" placeholder='Search...'
@@ -106,8 +105,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
                       </ListGroup >
                   </div>
                 </div>
-              </div>
-          </div>
+              </header>
         );
     }
 }

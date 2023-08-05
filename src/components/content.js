@@ -4,8 +4,7 @@ import Content2 from './content2'
 export default class Content extends Component {
     render(){ 
         return (
-                <section>
-                    <div className='layout'>
+                    <div className='layout-2'>
                     {
                         this.props.products.map((product) => (
                             <div key={product.id} className='content'>
@@ -19,8 +18,6 @@ export default class Content extends Component {
                         ))
                     }
                     </div>
-                    
 
-                </section>
         );}
 }
