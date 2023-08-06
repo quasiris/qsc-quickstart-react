@@ -12,7 +12,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
         this.suggestProducts = this.suggestProducts.bind(this);
         this.toggleDropdownn = this.toggleDropdownn.bind(this);
         this.onChangeSearchFromSuggest = this.onChangeSearchFromSuggest.bind(this);
-        this.search = this.search.bind(this);
+        this.enterPressed = this.enterPressed.bind(this);
       this.state = {
         searchText: "",
         search: false,
@@ -22,9 +22,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
         dataSuggest:[]
       };
     }
-    search (data){
-      return data.filter((item)=> item.name.includes(this.state.query));
-    }
+    enterPressed(event) {
+      var code = event.keyCode || event.which;
+      if(code === 13) { //13 is the enter keycode
+          this.searchProducts(this.state.searchText);
+      } 
+      this.toggleDropdownn();
+  }
     searchProducts(searchText) {
         DataService.searchProduct(searchText)
         .then(response => {
@@ -88,18 +92,19 @@ import ListGroup from 'react-bootstrap/ListGroup';
                   <div className="search-container">
                     <input type='text' className="search-input" name="searchText" placeholder='Search...'
                         value={this.state.searchText}
-                        onChange={this.onChangeSearchText}>
+                        onChange={this.onChangeSearchText}
+                        onKeyPress={this.enterPressed}>
                       </input>
-                    <span className="search-icon">               
-                      <button className='icon-style' onClick={()=>this.searchProducts(this.state.searchText)}><FontAwesomeIcon icon={faSearch}/></button>
+                    <span onClick={()=>this.searchProducts(this.state.searchText)} className="search-icon">               
+                      <button className='icon-style' ><FontAwesomeIcon icon={faSearch}/></button>
                     </span>    
                   </div>
                   <div className='search-result'>
                   <ListGroup  onBlur={() => this.toggleDropdownn()} variant="flush" className='list'> 
                         {this.state.openDropdown ? ( this.state.dataSuggest.map((item)=> (
-                          <ListGroup.Item key = {item.suggest} className='listItem'>                   
+                          <ListGroup.Item onClick={()=>this.onChangeSearchFromSuggest(item.suggest)} key = {item.suggest} className='listItem'>                   
                             <FontAwesomeIcon icon={faSearch}/>&nbsp;&nbsp;
-                            <strong onClick={()=>this.onChangeSearchFromSuggest(item.suggest)}>{item.suggest}</strong>
+                            <strong>{item.suggest}</strong>
                           </ListGroup.Item>
                         ))): (null)}
                       </ListGroup >

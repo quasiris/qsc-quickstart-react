@@ -78,7 +78,7 @@ export default class FilterPanel extends Component {
                 lastPage:response.data.result.products.paging.lastPage.number,
                 requestText:newRequestText,
             });
-            console.log("its me")
+            console.log(newRequestText)
           })
           .catch(e => {
             console.log(e);

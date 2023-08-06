@@ -5,10 +5,13 @@
 .layout-2{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 0fr 0fr;
+
 }
 .main-container{
   display: grid;
   grid-gap: 5px;
+  width: fit-content;
 }
 @media screen and (min-width: 600px) {
   .container-filter{
@@ -25,6 +28,17 @@
   }
 
 }
+@media screen and (max-width: 600px) {
+  .main-container {
+    margin: 0 auto;
+    grid-template-columns: 1fr;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  .card{
+    display: none;
+  }
+}
   .header {
     display: grid; 
     grid-auto-columns: 1fr; 
@@ -40,7 +54,7 @@
   background-color: #e9e9e9;
   color: #000;
   border-radius: 5px;
-  padding: 20px;
+  padding: 10px;
   font-size: 150%;
   margin-bottom: 10px;
 }
@@ -244,6 +258,7 @@ img {
   background: transparent;
   border: none;
   color:#ff3f40 ;
+  cursor: pointer;
 }
 .topnav .search-container button:hover {
 cursor: pointer;}
@@ -264,7 +279,7 @@ cursor: pointer;}
   background-color: #fff;
   box-shadow: 9px 9px 12px #ddd;
   border-radius: 10px;
-  width: 50%;
+  width: 35%;
 
 }
 .checklist{
@@ -337,16 +352,33 @@ cursor: pointer;}
       width:100%;
       display:grid;
       grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: 0fr 1fr;
+      grid-template-rows: 0fr 0fr;
       grid-template-areas: 'content1'
                            'content2';
     }
   }
-@media only screen and (max-width:600px) {
-  .card{
-    display: none;
+
+@media only screen and (max-width:500px) {
+  .footer-content {
+    margin-right: auto;
+  }
+  .list{
+    width: 75%;
+  }
+  .content{
+    width: 77%;
+  }
+  .layout-2{
+    width:90%;
+    display:grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 0fr 1fr;
+    grid-template-areas: 'content1'
+                        'content2';
   }
 }
+
+  
 @media only screen and (max-width:886px) {
   .layout-2{
     width:100%;
