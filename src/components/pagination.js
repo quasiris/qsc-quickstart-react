@@ -1,14 +1,59 @@
 import React, { Component } from 'react'
+import DataService from "../services/DataService";
+
 export default class Pagination extends Component {
-    
+    constructor(props) {
+        super(props);
+        this.getPage = this.getPage.bind(this);
+        this.state = {
+        };
+      }
+    getPage(number){
+        let newRequestText='';
+        if(this.props.requestText === '')
+        {
+          newRequestText='page='+number;
+        }else{
+          if(this.props.requestText.indexOf('page=')===0){
+            newRequestText='page='+number;
+          }else{
+            let result = this.props.requestText.indexOf("page=");
+            if(result<0){
+              newRequestText=this.props.requestText+"&page="+number;
+            }else{
+              newRequestText =this.props.requestText.substring(0, result)+"page="+number;
+            }
+          }
+        }
+
+        DataService.getData(newRequestText)
+        .then(response => {
+          this.props.setPagination({
+            products: response.data.result.products.documents,
+            firstPage:response.data.result.products.paging.firstPage.number,
+            currentPage:response.data.result.products.paging.currentPage,
+            nextPage:response.data.result.products.paging.nextPage.number,
+            previousPage:response.data.result.products.paging.previousPage.number,
+            lastPage:response.data.result.products.paging.lastPage.number,
+            requestText:newRequestText,
+          });
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+      }
     render(){ 
         return (        
             <div className="pagination">
-                  <div onClick={()=>this.getPage(this.state.currentPage)} className='index'>{this.state.currentPage}</div>
+                  <div onClick={()=>this.getPage(this.props.currentPage)} className='index'>{this.props.currentPage}</div>
                   <div><p className='index-text'>of</p></div>
-                  <div onClick={()=>this.getPage(this.state.currentPage)} className='index'>{this.state.lastPage}</div>
-                  <div onClick={()=>this.getPage(this.state.previousPage)} className='index'>❮</div>
-                  <div onClick={()=>this.getPage(this.state.nextPage)} className='index'>❯</div>
+                  <div onClick={()=>this.getPage(this.props.lastPage)} className='index'>{this.props.lastPage}</div>
+                  <div onClick={()=>this.getPage(this.props.previousPage)} className='index'>❮</div>
+                  <div onClick={()=>this.getPage(this.props.nextPage)} className='index'>❯</div>
               </div>
         );}
 }

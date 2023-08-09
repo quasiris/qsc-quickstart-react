@@ -8,13 +8,15 @@ export default class FilterPanel extends Component {
         this.suggestFilter = this.suggestFilter.bind(this);
         this.state = {
           filters: [],
-          filtersCheckBox: [],
+          value: [],
           checkedCheckboxes: [],
+          filtersCheckBox: [],
           filterText:'',      
+          search:false,      
         };
       }
       componentDidMount() {
-        this.suggestFilter();          
+        this.suggestFilter(); 
       }
       suggestFilter() {
         DataService.suggestFilter()
@@ -27,11 +29,16 @@ export default class FilterPanel extends Component {
             console.log(e);
           });
       }
-      handleCheckboxChange = (filter) => {
-        console.log(filter);
+      handleCheckboxChange = (filter,rowIndex,colIndex) => {
+        const newGrid = this.props.values.map((row, i) =>
+          i === rowIndex
+            ? row.map((col, j) => (j === colIndex ? !col : col))
+            : row
+        );
+        this.props.setvalues({ value: newGrid });
         let exist = false;
         let newRequestText='';
-        let checkedtab=this.state.checkedCheckboxes;
+        let checkedtab=this.props.checkedCheckboxes;
         if(checkedtab.length===0){
           checkedtab.push({filter})
         }else{
@@ -40,34 +47,40 @@ export default class FilterPanel extends Component {
               let index = checkedtab.indexOf(item)
               checkedtab.splice(index,1)
               exist=true;
-              console.log(exist)
             }          
           }
-          console.log(exist)
           if(exist===false){
             checkedtab.push({filter})
           }
         }
-        console.log(checkedtab)
-        this.setState({
-          checkedCheckboxes: checkedtab
-      });
-      if(checkedtab.length===0){
+      if((checkedtab.length===0)&&(this.props.requestTextNav.length===0)){
         newRequestText='';
       }else{
-        for (let index = 0; index < checkedtab.length; index++) {
-          if(index===checkedtab.length-1){
-            newRequestText=newRequestText+checkedtab[index].filter;
-          }else{
-            newRequestText=newRequestText+checkedtab[index].filter+'&';
+        if(this.props.requestTextNav.length===0){
+          for (let index = 0; index < checkedtab.length; index++) {
+            if(index===checkedtab.length-1){
+              newRequestText=newRequestText+checkedtab[index].filter;
+            }else{
+              newRequestText=newRequestText+checkedtab[index].filter+'&';
+            }
+          }
+        }else{
+          newRequestText=this.props.requestTextNav+'&';
+          for (let index = 0; index < checkedtab.length; index++) {
+            if(index===checkedtab.length-1){
+              newRequestText=newRequestText+checkedtab[index].filter;
+            }else{
+              newRequestText=newRequestText+checkedtab[index].filter+'&';
+            }
           }
         }
-        console.log(newRequestText)
+
       }
       DataService.searchProductWithFilter(newRequestText)
           .then(response => {
             this.setState({
               filterText:newRequestText,
+              checkedCheckboxes:checkedtab 
             });
             this.props.setProducts({
                 products: response.data.result.products.documents,
@@ -78,12 +91,19 @@ export default class FilterPanel extends Component {
                 lastPage:response.data.result.products.paging.lastPage.number,
                 requestText:newRequestText,
             });
-            console.log(newRequestText)
           })
           .catch(e => {
             console.log(e);
           });
       };
+      onChange(e, rowIndex,colIndex){
+        const newGrid = this.props.values.map((row, i) =>
+          i === rowIndex
+            ? row.map((col, j) => (j === colIndex ? e.target.checked : col))
+            : row
+        );
+        this.props.setvalues({ value: newGrid });
+     }
       render(){ 
         return (
           <Card>
@@ -95,16 +115,16 @@ export default class FilterPanel extends Component {
                     </div>
                     <div className="filter-body">
                         {
-                            this.state.filters.map((facet)=>(
+                            this.state.filters.map((facet,i)=>(
                                 <div key={facet.id} className="filter-group">
                                     <div className="group-heading">
                                         <h2 className=''>{facet.name}</h2>
                                     </div>
-                                    {facet.values.map((item)=>(
+                                    {facet.values.map((item,j)=>(
                                         <div key={item.value} className="checklist">
-                                            <label className='subcat'>
-                                                <input  type="checkbox"  onClick={()=>this.handleCheckboxChange(item.filter)} name="" value={item.value}/>&nbsp;&nbsp;{item.value}
-                                            </label>
+                                          <label className='subcat'>
+                                            <input type="checkbox" checked={this.props.values[i][j]} onChange={(e) => this.onChange(e,i,j)} onClick={()=>this.handleCheckboxChange(item.filter,i,j)} name="" value={item.value}/>&nbsp;&nbsp;{item.value}
+                                          </label>
                                         </div>
                                     ))}
                                 </div>

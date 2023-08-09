@@ -13,14 +13,24 @@ import ListGroup from 'react-bootstrap/ListGroup';
         this.toggleDropdownn = this.toggleDropdownn.bind(this);
         this.onChangeSearchFromSuggest = this.onChangeSearchFromSuggest.bind(this);
         this.enterPressed = this.enterPressed.bind(this);
-      this.state = {
-        searchText: "",
-        search: false,
-        successful: false,
-        openDropdown: false,
-        message: "",
-        dataSuggest:[]
-      };
+        this.state = {
+          searchText: "",
+          search: false,
+          successful: false,
+          openDropdown: false,
+          message: "",
+          dataSuggest:[],
+          checkedCheckboxes:[],
+          value:[]
+        };
+    }
+    componentDidMount() {
+      const rows = 50;
+      const cols = 50; 
+      const value = Array.from({ length: rows }, () =>
+        Array.from({ length: cols }, () => false)
+      );
+      this.setState({ value }); 
     }
     enterPressed(event) {
       var code = event.keyCode || event.which;
@@ -30,6 +40,12 @@ import ListGroup from 'react-bootstrap/ListGroup';
       this.toggleDropdownn();
   }
     searchProducts(searchText) {
+      let requestText=''
+      if(searchText.length===0){
+         requestText= searchText
+      }else{
+        requestText='q='+searchText
+      }
         DataService.searchProduct(searchText)
         .then(response => {
           this.props.setProducts({
@@ -39,7 +55,10 @@ import ListGroup from 'react-bootstrap/ListGroup';
               nextPage:response.data.result.products.paging.nextPage.number,
               previousPage:response.data.result.products.paging.previousPage.number,
               lastPage:response.data.result.products.paging.lastPage.number,
-              requestText: 'q='+searchText,
+              requestText: requestText,
+              requestTextNav: requestText,
+              checkedCheckboxes: [],
+              value:this.state.value
           });
         })
         .catch(e => {
