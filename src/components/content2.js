@@ -6,7 +6,8 @@ export default class content1 extends Component {
             <div>                              
                 <div className="product__info">
                     <div className="title">
-                        <p>{this.props.name}</p>
+                    <a href={`https://alexander-buerkle.com/de-de/produkt/${this.props.sku}`} className="title"><p>{this.props.name}</p></a>
+                        
                     </div>
                     <div className="price">
                         Sku : <span>{this.props.sku}</span>

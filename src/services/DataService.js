@@ -2,13 +2,10 @@ import http from "../http-common";
 
 class DataService {
     getproducts() {
-        return http.get("search/ab/products?q=");
+        return http.get("search/ab/products?q=*");
       }
     searchProduct(searchText) {
     return http.get(`search/ab/products?q=${searchText}`);
-    }
-    searchProductWithFilter(filter) {
-    return http.get(`search/ab/products?${filter}`);
     }
     suggestProducts(searchText) {
     return http.get(`suggest/ab/products?q=${searchText}`);

@@ -24,6 +24,11 @@ import ListGroup from 'react-bootstrap/ListGroup';
           value:[]
         };
     }
+    componentDidUpdate(prevProps) {
+      if (this.props.someProp !== prevProps.someProp) {
+        console.log('Props have changed:', this.props.someProp);
+      }
+    }
     componentDidMount() {
       const rows = 50;
       const cols = 50; 
@@ -35,18 +40,33 @@ import ListGroup from 'react-bootstrap/ListGroup';
     enterPressed(event) {
       var code = event.keyCode || event.which;
       if(code === 13) { //13 is the enter keycode
-          this.searchProducts(this.state.searchText);
+          this.searchProducts(this.props.searchText);
       } 
       this.toggleDropdownn();
   }
     searchProducts(searchText) {
+      this.toggleDropdownn();
       let requestText=''
-      if(searchText.length===0){
-         requestText= searchText
+      if(this.props.sortText.length===0){
+        if(searchText.length===0){
+          requestText= searchText
+       }else{
+         requestText='q='+searchText
+       }
       }else{
-        requestText='q='+searchText
+        if(searchText.length===0){
+          requestText= this.props.sortText
+       }else{
+         let result = this.props.sortText.indexOf("q=");
+            if(result<0){
+              requestText='q='+searchText+'&'+this.props.sortText
+            }else{
+              requestText =this.props.sortText.substring(0, result)+"q="+searchText;
+            }
+       }
       }
-        DataService.searchProduct(searchText)
+      
+        DataService.getData(requestText)
         .then(response => {
           this.props.setProducts({
               products: response.data.result.products.documents,
@@ -55,9 +75,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
               nextPage:response.data.result.products.paging.nextPage.number,
               previousPage:response.data.result.products.paging.previousPage.number,
               lastPage:response.data.result.products.paging.lastPage.number,
+              resultNumber:response.data.result.products.total,
               requestText: requestText,
+              searchText: searchText,
+              isDivVisible: true,
               requestTextNav: requestText,
               checkedCheckboxes: [],
+              items: [],
               value:this.state.value
           });
         })
@@ -78,7 +102,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
       }
     onChangeSearchText(e) {
         const searchText = e.target.value;
-        this.setState({
+        
+        this.props.setProducts({
           searchText: searchText
         }, () => {
           document.addEventListener('click', this.toggleDropdownn)
@@ -86,9 +111,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
         this.suggestProducts(searchText);
         if(this.state.openDropdown === false){
           this.setState({ 
-            openDropdown : true
+            openDropdown : true,
            });
         }
+        this.setState({ 
+          searchText: searchText
+         });
+
       }
     onChangeSearchFromSuggest(suggest){
       this.setState({
@@ -110,11 +139,11 @@ import ListGroup from 'react-bootstrap/ListGroup';
                 <div className="search-bar-container">
                   <div className="search-container">
                     <input type='text' className="search-input" name="searchText" placeholder='Search...'
-                        value={this.state.searchText}
+                        value={this.props.searchText}
                         onChange={this.onChangeSearchText}
                         onKeyPress={this.enterPressed}>
                       </input>
-                    <span onClick={()=>this.searchProducts(this.state.searchText)} className="search-icon">               
+                    <span onClick={()=>this.searchProducts(this.props.searchText)} className="search-icon">               
                       <button className='icon-style' ><FontAwesomeIcon icon={faSearch}/></button>
                     </span>    
                   </div>
