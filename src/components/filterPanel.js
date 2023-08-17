@@ -76,34 +76,22 @@ export default class FilterPanel extends Component {
       if((checkedtab.length===0)&&(this.props.requestTextNav.length===0)&&(this.props.sortText.length===0)){
         newRequestText='';
       }else{
-        if(this.props.requestTextNav.length===0){
-          for (let index = 0; index < checkedtab.length; index++) {
-            if(index===checkedtab.length-1){
-              newRequestText=newRequestText+checkedtab[index].filter;
-            }else{
-              newRequestText=newRequestText+checkedtab[index].filter+'&';
-            }
-          }
-        }else{
-          newRequestText=this.props.requestTextNav+'&';
-          for (let index = 0; index < checkedtab.length; index++) {
-            if(index===checkedtab.length-1){
-              newRequestText=newRequestText+checkedtab[index].filter;
-            }else{
-              newRequestText=newRequestText+checkedtab[index].filter+'&';
-            }
+        for (let index = 0; index < checkedtab.length; index++) {
+          if(index===checkedtab.length-1){
+            newRequestText=newRequestText+checkedtab[index].filter;
+          }else{
+            newRequestText=newRequestText+checkedtab[index].filter+'&';
           }
         }
-        if(checkedtab.length===0){
-          newRequestText=this.props.requestTextNav
+        if(this.props.searchText.length!==0){
+            newRequestText='q='+this.props.searchText+'&'+newRequestText;
         }
         if(newRequestText.length===0){
           newRequestText=this.props.sortText
         }else{
-        if((this.props.sortText.length>0)&&(this.props.requestTextNav.indexOf('sort')<0)){
-          newRequestText=newRequestText+'&'+this.props.sortText
-        }}
-
+          if(this.props.sortText.length>0){
+            newRequestText=newRequestText+'&'+this.props.sortText
+          }}
       }
       DataService.getData(newRequestText)
           .then(response => {

@@ -68,17 +68,33 @@ export default class Home extends Component {
       }
       handleSelectChange = (event) => {
         const selectedOption = event.target.options[event.target.selectedIndex];
-        let newRequestText;
+        let newRequestText='';
         if(this.state.requestText === '')
         {
           newRequestText='sort='+selectedOption.value
         }else{
-          let result = this.state.requestText.indexOf("sort=");
-            if(result<0){
-              newRequestText=this.state.requestText+"&sort="+selectedOption.value;
+          for (let index = 0; index < this.state.checkedCheckboxes.length; index++) {
+            if(index===this.state.checkedCheckboxes.length-1){
+              newRequestText=newRequestText+this.state.checkedCheckboxes[index].filter;
             }else{
-              newRequestText =this.state.requestText.substring(0, result)+"sort="+selectedOption.value;
+              newRequestText=newRequestText+this.state.checkedCheckboxes[index].filter+'&';
             }
+          }
+          if(newRequestText.length!==0){
+            if(this.state.searchText.length===0){
+              newRequestText=newRequestText+"&sort="+selectedOption.value;
+            }else{
+              newRequestText=newRequestText+'&q='+this.state.searchText+"&sort="+selectedOption.value;
+            }
+          }else{
+            if(this.state.searchText.length===0){
+              newRequestText="sort="+selectedOption.value;
+            }else{
+              newRequestText='q='+this.state.searchText+"&sort="+selectedOption.value;
+            }
+  
+          }
+          
         }
         DataService.getData(newRequestText)
           .then(response => {
@@ -108,27 +124,27 @@ export default class Home extends Component {
                 <div className='header-content'>
                     <div className="menu-heading">
                         <div className="filter-title">
-                          <h2 className=''>Products</h2>
+                          <h2 className=''>Products </h2>
                           <h5 className=''>{this.state.resultNumber} results found</h5>
                         </div>
                     </div>
                 </div>
                 <div className='sort-content'>
                     <br/>
-                    <br/>
-                    <select onChange={this.handleSelectChange}>
-                      {   
-                        this.state.sort.map((sortItem) => (
-                          <option key={sortItem.id}  value={sortItem.id}>{sortItem.name}</option>
-                        ))
-                      }
+                    <div className="select">
+                        <select onChange={this.handleSelectChange}>
+                        {   
+                          this.state.sort.map((sortItem) => (
+                            <option key={sortItem.id}  value={sortItem.id}>{sortItem.name}</option>
+                          ))
+                        }
 
-                    </select>
-                    &nbsp;
+                      </select>
+                    </div>
                 </div>
              </div>
              <div className='main-content'> 
-                <FilterPanel resultNumber={this.state.resultNumber} values={this.state.value} items={this.state.items} checkedCheckboxes={this.state.checkedCheckboxes} requestTextNav={this.state.requestTextNav} sortText={this.state.sortText} setProducts={this.updatePanel} setvalues={this.update}/>
+                <FilterPanel resultNumber={this.state.resultNumber} values={this.state.value} items={this.state.items} checkedCheckboxes={this.state.checkedCheckboxes} requestTextNav={this.state.requestTextNav} searchText={this.state.searchText} sortText={this.state.sortText} setProducts={this.updatePanel} setvalues={this.update}/>
                 <Content products={this.state.products} requestTextNav={this.state.requestTextNav} values={this.state.value} checkedCheckboxes={this.state.checkedCheckboxes} items={this.state.items} searchText={this.state.searchText} sortText={this.state.sortText} isDivVisible={this.state.isDivVisible} setProducts={this.update}  />
              </div>
              <div className='footer-content'>

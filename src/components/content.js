@@ -6,10 +6,6 @@ export default class Content extends Component {
 
       toggleDiv (item) {
         let newRequestText='';
-        console.log(item)
-        console.log(this.props.checkedCheckboxes)
-        console.log(this.props.requestTextNav)
-        console.log(this.props.sortText)
         const newGrid = this.props.values.map((row, i) =>
           i === item.rowindex
             ? row.map((col, j) => (j === item.colindex ? !col : col))
@@ -24,38 +20,25 @@ export default class Content extends Component {
             checkedtab.splice(index,1)
           }          
         }
-        console.log('checkedtab')
-        console.log(checkedtab)
         if((checkedtab.length===0)&&(this.props.requestTextNav.length===0)&&(this.props.sortText.length===0)){
           newRequestText='';
         }else{
-          if(this.props.requestTextNav.length===0){
-            for (let index = 0; index < checkedtab.length; index++) {
-              if(index===checkedtab.length-1){
-                newRequestText=newRequestText+checkedtab[index].filter;
-              }else{
-                newRequestText=newRequestText+checkedtab[index].filter+'&';
-              }
-            }
-          }else{
-            newRequestText=this.props.requestTextNav+'&';
-            for (let index = 0; index < checkedtab.length; index++) {
-              if(index===checkedtab.length-1){
-                newRequestText=newRequestText+checkedtab[index].filter;
-              }else{
-                newRequestText=newRequestText+checkedtab[index].filter+'&';
-              }
+          for (let index = 0; index < checkedtab.length; index++) {
+            if(index===checkedtab.length-1){
+              newRequestText=newRequestText+checkedtab[index].filter;
+            }else{
+              newRequestText=newRequestText+checkedtab[index].filter+'&';
             }
           }
-          if(checkedtab.length===0){
-            newRequestText=this.props.requestTextNav
+          if(this.props.searchText.length!==0){
+              newRequestText='q='+this.props.searchText+'&'+newRequestText;
           }
           if(newRequestText.length===0){
             newRequestText=this.props.sortText
           }else{
-          if((this.props.sortText.length>0)&&(this.props.requestTextNav.indexOf('sort')<0)){
-            newRequestText=newRequestText+'&'+this.props.sortText
-          }}
+            if(this.props.sortText.length>0){
+              newRequestText=newRequestText+'&'+this.props.sortText
+            }}
   
         }
         DataService.getData(newRequestText)
@@ -79,7 +62,25 @@ export default class Content extends Component {
             });
       };
       toggleDivSearch() {
-        DataService.getproducts()
+        let newRequestText='';
+        if((this.props.checkedCheckboxes.length===0)&&(this.props.sortText.length===0)){
+          newRequestText='';
+        }else{
+          for (let index = 0; index < this.props.checkedCheckboxes.length; index++) {
+            if(index===this.props.checkedCheckboxes.length-1){
+              newRequestText=newRequestText+this.props.checkedCheckboxes[index].filter;
+            }else{
+              newRequestText=newRequestText+this.props.checkedCheckboxes[index].filter+'&';
+            }
+          }
+          if(newRequestText.length===0){
+            newRequestText=this.props.sortText
+          }else{
+          if(this.props.sortText.length>0){
+            newRequestText=newRequestText+'&'+this.props.sortText
+          }}
+        }
+        DataService.getData(newRequestText)
         .then(response => {
           this.props.setProducts({
               products: response.data.result.products.documents,
@@ -89,7 +90,7 @@ export default class Content extends Component {
               previousPage:response.data.result.products.paging.previousPage.number,
               lastPage:response.data.result.products.paging.lastPage.number,
               resultNumber:response.data.result.products.total,
-              requestText: '',
+              requestText:newRequestText,
               searchText: '',
               requestTextNav: '',
               isDivVisible :!this.props.isDivVisible
