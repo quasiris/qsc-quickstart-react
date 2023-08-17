@@ -55,7 +55,7 @@ export default class FilterPanel extends Component {
         }else{
           newItemsList = newItemsList.filter(itemlist => itemlist.name !== item);
         }
-        this.props.setvalues({ value: newGrid,items : newItemsList });
+        this.props.setvalues({ valuesCheckboxes: newGrid,itemsListCheckedCheckboxes : newItemsList });
         let exist = false;
         let newRequestText='';
         let checkedtab=this.props.checkedCheckboxes;
@@ -73,7 +73,7 @@ export default class FilterPanel extends Component {
             checkedtab.push({filter})
           }
         }
-      if((checkedtab.length===0)&&(this.props.requestTextNav.length===0)&&(this.props.sortText.length===0)){
+      if((checkedtab.length===0)&&(this.props.searchText.length===0)&&(this.props.sortText.length===0)){
         newRequestText='';
       }else{
         for (let index = 0; index < checkedtab.length; index++) {
@@ -120,7 +120,7 @@ export default class FilterPanel extends Component {
             ? row.map((col, j) => (j === colIndex ? e.target.checked : col))
             : row
         );
-        this.props.setvalues({ value: newGrid });
+        this.props.setvalues({ valuesCheckboxes: newGrid });
      }
       render(){ 
         return (

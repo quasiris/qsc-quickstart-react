@@ -21,7 +21,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
           message: "",
           dataSuggest:[],
           checkedCheckboxes:[],
-          value:[]
+          valuesCheckboxes:[]
         };
     }
     componentDidUpdate(prevProps) {
@@ -32,10 +32,10 @@ import ListGroup from 'react-bootstrap/ListGroup';
     componentDidMount() {
       const rows = 50;
       const cols = 50; 
-      const value = Array.from({ length: rows }, () =>
+      const valuesCheckboxes = Array.from({ length: rows }, () =>
         Array.from({ length: cols }, () => false)
       );
-      this.setState({ value }); 
+      this.setState({ valuesCheckboxes }); 
     }
     enterPressed(event) {
       var code = event.keyCode || event.which;
@@ -81,8 +81,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
               isDivVisible: true,
               requestTextNav: requestText,
               checkedCheckboxes: [],
-              items: [],
-              value:this.state.value
+              itemsListCheckedCheckboxes: [],
+              valuesCheckboxes:this.state.valuesCheckboxes
           });
         })
         .catch(e => {

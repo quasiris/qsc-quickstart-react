@@ -20,7 +20,7 @@ export default class Content extends Component {
             checkedtab.splice(index,1)
           }          
         }
-        if((checkedtab.length===0)&&(this.props.requestTextNav.length===0)&&(this.props.sortText.length===0)){
+        if((checkedtab.length===0)&&(this.props.searchText.length===0)&&(this.props.sortText.length===0)){
           newRequestText='';
         }else{
           for (let index = 0; index < checkedtab.length; index++) {
@@ -53,8 +53,8 @@ export default class Content extends Component {
                   resultNumber:response.data.result.products.total,
                   requestText:newRequestText,
                   checkedCheckboxes:checkedtab,
-                  value:newGrid,
-                  items : newItemsList,
+                  valuesCheckboxes:newGrid,
+                  itemsListCheckedCheckboxes : newItemsList,
               });
             })
             .catch(e => {

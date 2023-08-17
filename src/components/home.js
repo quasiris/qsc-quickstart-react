@@ -5,6 +5,7 @@ import Content from './content';
 import Pagination from './pagination';
 import FilterPanel from './filterPanel';
 import Footer from './footer';
+import Sort from './sort';
 
 export default class Home extends Component {
     constructor(props) {
@@ -13,13 +14,14 @@ export default class Home extends Component {
         this.state = {
           products: [],
           users :[],
-          value :[],
-          items :[],
+          valuesCheckboxes :[],
+          itemsListCheckedCheckboxes :[],
+          sort  :[],
           checkedCheckboxes: [] ,
-          firstPage: 1,
-          currentPage: 1,
-          nextPage:2,
-          lastPage:18025,
+          firstPage:0,
+          currentPage:0,
+          nextPage:0,
+          lastPage:0,
           previousPage:0,
           search:false,
           isDivVisible:false,
@@ -28,25 +30,21 @@ export default class Home extends Component {
           requestText:'',
           searchText:'',
           requestTextNav:'',
-          sort:[]
+          
         };
         this.update=this.update.bind(this);
-        this.updatePanel=this.updatePanel.bind(this);
       }
       update(nextState) {
         this.setState(nextState) 
-      }
-      updatePanel(nextState) {
-        this.setState(nextState);
       }
       componentDidMount() {
         this.getData(this.state.requestText);      
         const rows = 50;
         const cols = 50; 
-        const value = Array.from({ length: rows }, () =>
+        const valuesCheckboxes = Array.from({ length: rows }, () =>
           Array.from({ length: cols }, () => false)
         );
-        this.setState({ value });  
+        this.setState({ valuesCheckboxes });  
       }
       getData(newRequestText) {
         DataService.getData(newRequestText)
@@ -66,60 +64,12 @@ export default class Home extends Component {
             console.log(e);
           });
       }
-      handleSelectChange = (event) => {
-        const selectedOption = event.target.options[event.target.selectedIndex];
-        let newRequestText='';
-        if(this.state.requestText === '')
-        {
-          newRequestText='sort='+selectedOption.value
-        }else{
-          for (let index = 0; index < this.state.checkedCheckboxes.length; index++) {
-            if(index===this.state.checkedCheckboxes.length-1){
-              newRequestText=newRequestText+this.state.checkedCheckboxes[index].filter;
-            }else{
-              newRequestText=newRequestText+this.state.checkedCheckboxes[index].filter+'&';
-            }
-          }
-          if(newRequestText.length!==0){
-            if(this.state.searchText.length===0){
-              newRequestText=newRequestText+"&sort="+selectedOption.value;
-            }else{
-              newRequestText=newRequestText+'&q='+this.state.searchText+"&sort="+selectedOption.value;
-            }
-          }else{
-            if(this.state.searchText.length===0){
-              newRequestText="sort="+selectedOption.value;
-            }else{
-              newRequestText='q='+this.state.searchText+"&sort="+selectedOption.value;
-            }
-  
-          }
-          
-        }
-        DataService.getData(newRequestText)
-          .then(response => {
-            this.setState({
-                products: response.data.result.products.documents,
-                firstPage:response.data.result.products.paging.firstPage.number,
-                currentPage:response.data.result.products.paging.currentPage,
-                nextPage:response.data.result.products.paging.nextPage.number,
-                previousPage:response.data.result.products.paging.previousPage.number,
-                lastPage:response.data.result.products.paging.lastPage.number,
-                resultNumber:response.data.result.products.total,
-                sort:response.data.result.products.sort.sort,
-                sortText:"sort="+selectedOption.value,
-                requestText:newRequestText,
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      };
+      
       
       render(){ 
         return (
           <div className='main-container'>
-             <Navbar sortText={this.state.sortText} searchText={this.state.searchText}  setProducts={this.updatePanel} />
+             <Navbar sortText={this.state.sortText} searchText={this.state.searchText}  setProducts={this.update} />
              <div className='top-content'>
                 <div className='header-content'>
                     <div className="menu-heading">
@@ -131,24 +81,15 @@ export default class Home extends Component {
                 </div>
                 <div className='sort-content'>
                     <br/>
-                    <div className="select">
-                        <select onChange={this.handleSelectChange}>
-                        {   
-                          this.state.sort.map((sortItem) => (
-                            <option key={sortItem.id}  value={sortItem.id}>{sortItem.name}</option>
-                          ))
-                        }
-
-                      </select>
-                    </div>
+                    <Sort requestText={this.state.requestText} sort={this.state.sort} searchText={this.state.searchText} checkedCheckboxes={this.state.checkedCheckboxes} setProducts={this.update}/>
                 </div>
              </div>
              <div className='main-content'> 
-                <FilterPanel resultNumber={this.state.resultNumber} values={this.state.value} items={this.state.items} checkedCheckboxes={this.state.checkedCheckboxes} requestTextNav={this.state.requestTextNav} searchText={this.state.searchText} sortText={this.state.sortText} setProducts={this.updatePanel} setvalues={this.update}/>
-                <Content products={this.state.products} requestTextNav={this.state.requestTextNav} values={this.state.value} checkedCheckboxes={this.state.checkedCheckboxes} items={this.state.items} searchText={this.state.searchText} sortText={this.state.sortText} isDivVisible={this.state.isDivVisible} setProducts={this.update}  />
+                <FilterPanel resultNumber={this.state.resultNumber} values={this.state.valuesCheckboxes} items={this.state.itemsListCheckedCheckboxes} checkedCheckboxes={this.state.checkedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} setProducts={this.update} setvalues={this.update}/>
+                <Content products={this.state.products} values={this.state.valuesCheckboxes} checkedCheckboxes={this.state.checkedCheckboxes} items={this.state.itemsListCheckedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} isDivVisible={this.state.isDivVisible} setProducts={this.update}  />
              </div>
              <div className='footer-content'>
-                <Pagination requestText={this.state.requestText} currentPage={this.state.currentPage} lastPage={this.state.lastPage} previousPage={this.state.previousPage} nextPage={this.state.nextPage} setPagination={this.updatePanel}/>
+                <Pagination requestText={this.state.requestText} currentPage={this.state.currentPage} lastPage={this.state.lastPage} previousPage={this.state.previousPage} nextPage={this.state.nextPage} setPagination={this.update}/>
                 <br/><br/><br/><br/>
                 <Footer/>
             </div>

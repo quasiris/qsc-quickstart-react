@@ -2,12 +2,6 @@ import React, { Component } from 'react'
 import DataService from "../services/DataService";
 
 export default class Pagination extends Component {
-    constructor(props) {
-        super(props);
-        this.getPage = this.getPage.bind(this);
-        this.state = {
-        };
-      }
     getPage(number){
         let newRequestText='';
         if(this.props.requestText === '')
@@ -49,9 +43,9 @@ export default class Pagination extends Component {
     render(){ 
         return (        
             <div className="pagination">
-                  <div onClick={()=>this.getPage(this.props.currentPage)} className='index'>{this.props.currentPage}</div>
+                  <div className='index'>{this.props.currentPage}</div>
                   <div><p className='index-text'>of</p></div>
-                  <div onClick={()=>this.getPage(this.props.lastPage)} className='index'>{this.props.lastPage}</div>
+                  <div className='index'>{this.props.lastPage}</div>
                   <div onClick={()=>this.getPage(this.props.previousPage)} className='index'>❮</div>
                   <div onClick={()=>this.getPage(this.props.nextPage)} className='index'>❯</div>
               </div>
