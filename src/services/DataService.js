@@ -3,7 +3,7 @@ import http from "../http-common";
 class DataService {
     getproducts() {
         return http.get("search/ab/products?q=*");
-      }
+    }
     searchProduct(searchText) {
     return http.get(`search/ab/products?q=${searchText}`);
     }
@@ -20,4 +20,5 @@ class DataService {
     return http.get(`search/ab/products?${requestText}`);
     }
 }
-export default new DataService();
+let dataService =new DataService()
+export default dataService;

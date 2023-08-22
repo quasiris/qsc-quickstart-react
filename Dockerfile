@@ -1,7 +1,9 @@
 FROM node:alpine
-WORKDIR '/first-app'
+WORKDIR '/qsc-quickstart-react'
 
 COPY package.json .
 RUN npm install
 COPY . .
+RUN npm run build
+EXPOSE 3000
 CMD ["npm","start"]
