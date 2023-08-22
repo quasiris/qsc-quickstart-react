@@ -5,9 +5,7 @@ import Card from 'react-bootstrap/Card';
 export default class FilterPanel extends Component {
     constructor(props) {
         super(props);
-        this.suggestFilter = this.suggestFilter.bind(this);
         this.state = {
-          filters: [],
           value: [],
           filtersCheckBox: [],
           filterText:'',      
@@ -15,26 +13,7 @@ export default class FilterPanel extends Component {
           resultNumber:'',      
         };
       }
-      componentDidMount() {
-        this.suggestFilter(); 
-      }
-      suggestFilter() {
-        DataService.suggestFilter()
-          .then(response => {
-            this.setState({
-                filters: response.data.result.products.facets
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      }
       handleCheckboxChange = (filter,rowIndex,colIndex,item) => {
-        const newGrid = this.props.values.map((row, i) =>
-          i === rowIndex
-            ? row.map((col, j) => (j === colIndex ? !col : col))
-            : row
-        );
         let newItemsList = this.props.items
         let index = -1;
         if(newItemsList.length > 0){
@@ -49,13 +28,14 @@ export default class FilterPanel extends Component {
             name: item,
             filter: filter,
             rowindex: rowIndex,
-            colindex: colIndex
+            colindex: colIndex,
+            checked:true
         };
           newItemsList.push(newItem)
         }else{
           newItemsList = newItemsList.filter(itemlist => itemlist.name !== item);
         }
-        this.props.setvalues({ valuesCheckboxes: newGrid,itemsListCheckedCheckboxes : newItemsList });
+        this.props.setvalues({ itemsListCheckedCheckboxes : newItemsList });
         let exist = false;
         let newRequestText='';
         let checkedtab=this.props.checkedCheckboxes;
@@ -106,6 +86,7 @@ export default class FilterPanel extends Component {
                 previousPage:response.data.result.products.paging.previousPage.number,
                 lastPage:response.data.result.products.paging.lastPage.number,
                 resultNumber:response.data.result.products.total,
+                filters: response.data.result.products.facets,
                 requestText:newRequestText,
                 checkedCheckboxes:checkedtab 
             });
@@ -114,13 +95,8 @@ export default class FilterPanel extends Component {
             console.log(e);
           });
       };
-      onChange(e, rowIndex,colIndex){
-        const newGrid = this.props.values.map((row, i) =>
-          i === rowIndex
-            ? row.map((col, j) => (j === colIndex ? e.target.checked : col))
-            : row
-        );
-        this.props.setvalues({ valuesCheckboxes: newGrid });
+      onChange(e){
+     
      }
       render(){ 
         return (
@@ -129,16 +105,16 @@ export default class FilterPanel extends Component {
                 <div className="filter-menu">
                     <div className="filter-body">
                         {
-                            this.state.filters.map((facet,i)=>(
+                            this.props.filters.map((facet,i)=>(
                                 <div key={facet.id} className="filter-group">
                                     <div className="group-heading">
                                         <h2 className=''>{facet.name}</h2>
                                     </div>
                                     {facet.values.map((item,j)=>(
                                         <div key={item.value} className="checklist">
-                                          <label className='subcat'>
-                                            <input type="checkbox" checked={this.props.values[i][j]} onChange={(e) => this.onChange(e,i,j)} onClick={()=>this.handleCheckboxChange(item.filter,i,j,item.value)} name="" value={item.value}/>&nbsp;&nbsp;{item.value}&nbsp;({item.count})
-                                          </label>
+                                            <label className='subcat'>
+                                            <input type="checkbox" checked={item.selected} onChange={(e) => this.onChange(e,i,j)} onClick={()=>this.handleCheckboxChange(item.filter,i,j,item.value)} name="" value={item.value}/>&nbsp;&nbsp;{item.value}&nbsp;({item.count})
+                                            </label>
                                         </div>
                                     ))}
                                 </div>

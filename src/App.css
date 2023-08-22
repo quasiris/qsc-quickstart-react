@@ -340,8 +340,7 @@ h5{
    margin: 0;
 }
 .index-text{
-    font-size: 1.25rem;
-    font-family: fantasy;
+    font-size: 1em;
     margin: 8px 7px 0px 5px;
 }
 .pagination a {

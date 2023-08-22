@@ -46,6 +46,7 @@ export default class Sort extends Component {
                 sort:response.data.result.products.sort.sort,
                 sortText:"sort="+selectedOption.value,
                 requestText:newRequestText,
+                filters: response.data.result.products.facets,
             });
           })
           .catch(e => {

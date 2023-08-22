@@ -12,6 +12,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
         this.suggestProducts = this.suggestProducts.bind(this);
         this.toggleDropdownn = this.toggleDropdownn.bind(this);
         this.onChangeSearchFromSuggest = this.onChangeSearchFromSuggest.bind(this);
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.enterPressed = this.enterPressed.bind(this);
         this.state = {
           searchText: "",
@@ -21,22 +22,16 @@ import ListGroup from 'react-bootstrap/ListGroup';
           message: "",
           dataSuggest:[],
           checkedCheckboxes:[],
-          valuesCheckboxes:[]
         };
     }
-    componentDidUpdate(prevProps) {
-      if (this.props.someProp !== prevProps.someProp) {
-        console.log('Props have changed:', this.props.someProp);
-      }
-    }
     componentDidMount() {
-      const rows = 50;
-      const cols = 50; 
-      const valuesCheckboxes = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => false)
-      );
-      this.setState({ valuesCheckboxes }); 
+      document.addEventListener('click', this.handleOutsideClick);
     }
+  
+    componentWillUnmount() {
+      document.removeEventListener('click', this.handleOutsideClick);
+    }
+
     enterPressed(event) {
       var code = event.keyCode || event.which;
       if(code === 13) { //13 is the enter keycode
@@ -69,6 +64,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
         DataService.getData(requestText)
         .then(response => {
           this.props.setProducts({
+              filters: response.data.result.products.facets,
               products: response.data.result.products.documents,
               firstPage:response.data.result.products.paging.firstPage.number,
               currentPage:response.data.result.products.paging.currentPage,
@@ -82,7 +78,6 @@ import ListGroup from 'react-bootstrap/ListGroup';
               requestTextNav: requestText,
               checkedCheckboxes: [],
               itemsListCheckedCheckboxes: [],
-              valuesCheckboxes:this.state.valuesCheckboxes
           });
         })
         .catch(e => {
@@ -105,9 +100,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
         
         this.props.setProducts({
           searchText: searchText
-        }, () => {
-          document.addEventListener('click', this.toggleDropdownn)
-      });
+        })
         this.suggestProducts(searchText);
         if(this.state.openDropdown === false){
           this.setState({ 
@@ -130,6 +123,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
         openDropdown : false
        });
     }
+    handleOutsideClick(event) {
+      if (this.state.openDropdown && !this.list.contains(event.target)) {
+        this.setState({
+          openDropdown: false,
+        });
+      }
+    }
     render() {
         return(
               <header className="header">
@@ -148,7 +148,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
                     </span>    
                   </div>
                   <div className='search-result'>
-                  <ListGroup  onBlur={() => this.toggleDropdownn()} variant="flush" className='list'> 
+                  <ListGroup  ref={(node) => { this.list = node; }} variant="flush" className='list'> 
                         {this.state.openDropdown ? ( this.state.dataSuggest.map((item)=> (
                           <ListGroup.Item onClick={()=>this.onChangeSearchFromSuggest(item.suggest)} key = {item.suggest} className='listItem'>                   
                             <FontAwesomeIcon icon={faSearch}/>&nbsp;&nbsp;

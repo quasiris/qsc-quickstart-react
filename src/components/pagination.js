@@ -30,6 +30,7 @@ export default class Pagination extends Component {
             previousPage:response.data.result.products.paging.previousPage.number,
             lastPage:response.data.result.products.paging.lastPage.number,
             requestText:newRequestText,
+            filters: response.data.result.products.facets,
           });
           window.scrollTo({
             top: 0,
@@ -44,7 +45,7 @@ export default class Pagination extends Component {
         return (        
             <div className="pagination">
                   <div className='index'>{this.props.currentPage}</div>
-                  <div><p className='index-text'>of</p></div>
+                  <span className='index-text'>of</span>
                   <div className='index'>{this.props.lastPage}</div>
                   <div onClick={()=>this.getPage(this.props.previousPage)} className='index'>❮</div>
                   <div onClick={()=>this.getPage(this.props.nextPage)} className='index'>❯</div>

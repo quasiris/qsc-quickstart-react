@@ -13,8 +13,8 @@ export default class Home extends Component {
         this.getData = this.getData.bind(this);
         this.state = {
           products: [],
+          filters: [],
           users :[],
-          valuesCheckboxes :[],
           itemsListCheckedCheckboxes :[],
           sort  :[],
           checkedCheckboxes: [] ,
@@ -39,12 +39,6 @@ export default class Home extends Component {
       }
       componentDidMount() {
         this.getData(this.state.requestText);      
-        const rows = 50;
-        const cols = 50; 
-        const valuesCheckboxes = Array.from({ length: rows }, () =>
-          Array.from({ length: cols }, () => false)
-        );
-        this.setState({ valuesCheckboxes });  
       }
       getData(newRequestText) {
         DataService.getData(newRequestText)
@@ -58,13 +52,13 @@ export default class Home extends Component {
                 lastPage:response.data.result.products.paging.lastPage.number,
                 resultNumber:response.data.result.products.total,
                 sort:response.data.result.products.sort.sort,
+                filters: response.data.result.products.facets
             });
           })
           .catch(e => {
             console.log(e);
           });
-      }
-      
+      }      
       
       render(){ 
         return (
@@ -85,8 +79,8 @@ export default class Home extends Component {
                 </div>
              </div>
              <div className='main-content'> 
-                <FilterPanel resultNumber={this.state.resultNumber} values={this.state.valuesCheckboxes} items={this.state.itemsListCheckedCheckboxes} checkedCheckboxes={this.state.checkedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} setProducts={this.update} setvalues={this.update}/>
-                <Content products={this.state.products} values={this.state.valuesCheckboxes} checkedCheckboxes={this.state.checkedCheckboxes} items={this.state.itemsListCheckedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} isDivVisible={this.state.isDivVisible} setProducts={this.update}  />
+                <FilterPanel filters={this.state.filters} resultNumber={this.state.resultNumber} items={this.state.itemsListCheckedCheckboxes} checkedCheckboxes={this.state.checkedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} setProducts={this.update} setvalues={this.update}/>
+                <Content products={this.state.products} checkedCheckboxes={this.state.checkedCheckboxes} items={this.state.itemsListCheckedCheckboxes} searchText={this.state.searchText} sortText={this.state.sortText} isDivVisible={this.state.isDivVisible} setProducts={this.update}  />
              </div>
              <div className='footer-content'>
                 <Pagination requestText={this.state.requestText} currentPage={this.state.currentPage} lastPage={this.state.lastPage} previousPage={this.state.previousPage} nextPage={this.state.nextPage} setPagination={this.update}/>

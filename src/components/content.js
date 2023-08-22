@@ -6,11 +6,6 @@ export default class Content extends Component {
 
       toggleDiv (item) {
         let newRequestText='';
-        const newGrid = this.props.values.map((row, i) =>
-          i === item.rowindex
-            ? row.map((col, j) => (j === item.colindex ? !col : col))
-            : row
-        );
         let newItemsList = this.props.items
         newItemsList = newItemsList.filter(itemlist => itemlist.name !== item.name);
         let checkedtab = this.props.checkedCheckboxes
@@ -51,9 +46,9 @@ export default class Content extends Component {
                   previousPage:response.data.result.products.paging.previousPage.number,
                   lastPage:response.data.result.products.paging.lastPage.number,
                   resultNumber:response.data.result.products.total,
+                  filters: response.data.result.products.facets,
                   requestText:newRequestText,
                   checkedCheckboxes:checkedtab,
-                  valuesCheckboxes:newGrid,
                   itemsListCheckedCheckboxes : newItemsList,
               });
             })
@@ -91,6 +86,7 @@ export default class Content extends Component {
               lastPage:response.data.result.products.paging.lastPage.number,
               resultNumber:response.data.result.products.total,
               requestText:newRequestText,
+              filters: response.data.result.products.facets,
               searchText: '',
               requestTextNav: '',
               isDivVisible :!this.props.isDivVisible
